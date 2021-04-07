@@ -1,0 +1,1 @@
+﻿print("Successfully executed python script from WinForms app!")
