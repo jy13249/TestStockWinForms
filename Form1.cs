@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using IronPython.Hosting;
+using Microsoft.Scripting.Hosting;
 
 namespace TestStockWinForms
 {
@@ -28,11 +29,20 @@ namespace TestStockWinForms
         private void button1_Click(object sender, EventArgs e)
         {
             label2.Visible = true;
-            TestPython();
+            label2.Text = TestPythonWithIronPython();
             
         }
 
-        private void TestPython()
+        public string TestPythonWithIronPython()
+        {
+            var engine = Python.CreateEngine();
+            var scope = engine.CreateScope();
+            ScriptSource source = engine.CreateScriptSourceFromString("testscript");
+            string result = source.Execute(scope);
+            return result;
+        }
+
+        private void TestPythonWithProcess()
         {
             string filename = "testscript.py";
 
@@ -41,7 +51,8 @@ namespace TestStockWinForms
             {
                 RedirectStandardOutput = true,
                 UseShellExecute = false,
-                CreateNoWindow = false
+                CreateNoWindow = true,
+                RedirectStandardError = true
             };
 
             p.Start();
