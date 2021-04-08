@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -29,36 +30,34 @@ namespace TestStockWinForms
         private void button1_Click(object sender, EventArgs e)
         {
             label2.Visible = true;
-            label2.Text = TestPythonWithIronPython();
+            //string stockList = TestPythonWithProcess();
+            //label2.Text = TestPythonWithProcess();
+            string[] newStockList = TestPythonWithProcess();
+
             
         }
 
-        public string TestPythonWithIronPython()
+        public string[] TestPythonWithProcess()
         {
-            var engine = Python.CreateEngine();
-            var scope = engine.CreateScope();
-            ScriptSource source = engine.CreateScriptSourceFromString("testscript");
-            string result = source.Execute(scope);
-            return result;
-        }
-
-        private void TestPythonWithProcess()
-        {
-            string filename = "testscript.py";
-
-            Process p = new Process();
-            p.StartInfo = new ProcessStartInfo("python.exe", filename)
+            ProcessStartInfo start = new ProcessStartInfo();
+            var pythonPath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "python.exe");
+            start.FileName = pythonPath;
+            start.Arguments = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "testscript.py");
+            start.UseShellExecute = false;
+            start.RedirectStandardOutput = true;
+            start.CreateNoWindow = true;
+            using(Process process = Process.Start(start))
             {
-                RedirectStandardOutput = true,
-                UseShellExecute = false,
-                CreateNoWindow = true,
-                RedirectStandardError = true
-            };
-
-            p.Start();
-            label2.Text = p.StandardOutput.ReadToEnd();
-            p.WaitForExit();
+                using(StreamReader reader = process.StandardOutput)
+                {
+                    
+                    string[] result = reader.ReadToEnd().Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
+                    return result;
+                }
+            }
         }
+
+
 
     }
 }
