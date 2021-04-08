@@ -30,10 +30,15 @@ namespace TestStockWinForms
         private void button1_Click(object sender, EventArgs e)
         {
             label2.Visible = true;
-            //string stockList = TestPythonWithProcess();
-            //label2.Text = TestPythonWithProcess();
+            //Stores the list of stocks in a string array
             string[] newStockList = TestPythonWithProcess();
-
+            //Prints out the first stock from the array
+            comboBox1.Text = newStockList[0];
+            //Adds each stock from the array into the comboList box
+            foreach(string s in newStockList)
+            {
+                comboBox1.Items.Add(s);
+            }
             
         }
 
@@ -58,6 +63,11 @@ namespace TestStockWinForms
         }
 
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void listView1_SelectedIndexChanged(object sender, EventArgs e)
         {
 
         }
